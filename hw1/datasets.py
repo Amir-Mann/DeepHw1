@@ -37,16 +37,16 @@ def torch_temporary_seed(seed: int):
     #  Implement this context manager as described.
     #  See torch.random.get/set_rng_state(), torch.random.manual_seed().
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    old_state = torch.random.get()
     # ========================
     try:
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        torch.random.manual_seed(seed)
         # ========================
         yield
     finally:
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        torch.random.set(old_state)
         # ========================
 
 
