@@ -126,9 +126,14 @@ class ImageStreamDataset(IterableDataset):
         #  Yield tuples to produce an iterator over random images and labels.
         #  The iterator should produce an infinite stream of data.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return self
+    
+    def __next__(self):
+        """
+        :return: A tuple of image tensor and label
+        """
+        return random_labelled_image(self.image_dim, self.num_classes)
         # ========================
-
 
 class SubsetDataset(Dataset):
     """
@@ -150,14 +155,25 @@ class SubsetDataset(Dataset):
         self.offset = offset
 
     def __getitem__(self, index):
+        """
+         Returns a labeled sample.
+        :param index: Sample index.
+        :return: A tuple (sample, label) containing the features and its class label.
+        Raises a ValueError if index is out of range.
+        """
         # TODO:
         #  Return the item at index + offset from the source dataset.
         #  Raise an IndexError if index is out of bounds.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        if index < 0 or index >= self.subset_len:
+            raise IndexError("Index outside of the subset dataset")
+        return self.source_dataset[self.offset + index]
         # ========================
 
     def __len__(self):
+        """
+        :return: Number of samples in this subset dataset.
+        """
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return self.subset_len
         # ========================

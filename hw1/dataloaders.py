@@ -22,16 +22,31 @@ class FirstLastSampler(Sampler):
     def __iter__(self) -> Iterator[int]:
         # TODO:
         # Implement the logic required for this sampler.
-        # If the length of the data source is N, you should return indices in a
+        # If the length of the data so4urce is N, you should return indices in a
         # first-last ordering, i.e. [0, N-1, 1, N-2, ...].
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return FirstLastSamplerIterator(len(self.data_source))
         # ========================
 
     def __len__(self):
         return len(self.data_source)
 
+class FirstLastSamplerIterator(Iterator[int]):
+    def __init__(self, N: int) -> None:
+        super().__init__()
+        self.N = N
+        self.current = -1
+        
+    def __next__(self):
+        self.current += 1
+        if self.current >= self.N:
+            raise StopIteration
+        if self.current % 2 == 0:
+            return int(self.current / 2)
+        else:
+            return self.N - 1 - int(self.current / 2)
 
+    
 def create_train_validation_loaders(
     dataset: Dataset, validation_ratio, batch_size=100, num_workers=2
 ):
@@ -58,7 +73,29 @@ def create_train_validation_loaders(
     #  Hint: you can specify a Sampler class for the `DataLoader` instance
     #  you create.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    num_samples = len(dataset)
+    validation_size = int(num_samples * validation_ratio)
+    train_size = num_samples - validation_size
+    dl_train = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, num_workers=num_workers,
+        sampler=StartStopSampler(dataset, 0, train_size),
+    )
+    dl_valid = torch.utils.data.DataLoader(
+        dataset, batch_size=batch_size, num_workers=num_workers,
+        sampler=StartStopSampler(dataset, train_size, num_samples),
+    )
     # ========================
 
     return dl_train, dl_valid
+
+class StartStopSampler(Sampler):
+    def __init__(self, data_source: Sized ,start_index: int, stop_index: int, step=1):
+        super().__init__(data_source)
+        self.data_source = data_source
+
+        self.start_index = start_index
+        self.stop_index = stop_index
+        self.step = step
+
+    def __iter__(self) -> Iterator[int]:
+        return iter(range(self.start_index, self.stop_index, self.step))

@@ -29,9 +29,8 @@ class InvertColors(object):
         """
         # TODO: Invert the colors of the input image.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return 1 - x
         # ========================
-
 
 class FlipUpDown(object):
     def __call__(self, x: torch.Tensor):
@@ -41,10 +40,8 @@ class FlipUpDown(object):
         """
         # TODO: Flip the input image so that up is down.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return torch.flip(x, (1,))
         # ========================
-
-
 class BiasTrick(object):
     """
     A transform that applies the "bias trick": Prepends an element equal to
