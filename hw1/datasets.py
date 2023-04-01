@@ -37,7 +37,7 @@ def torch_temporary_seed(seed: int):
     #  Implement this context manager as described.
     #  See torch.random.get/set_rng_state(), torch.random.manual_seed().
     # ====== YOUR CODE: ======
-    old_state = torch.random.get()
+    old_state = torch.random.get_rng_state()
     # ========================
     try:
         # ====== YOUR CODE: ======
@@ -46,7 +46,7 @@ def torch_temporary_seed(seed: int):
         yield
     finally:
         # ====== YOUR CODE: ======
-        torch.random.set(old_state)
+        torch.random.set_rng_state(old_state)
         # ========================
 
 
@@ -83,7 +83,13 @@ class RandomImageDataset(Dataset):
         #  the random state outside this method.
         #  Raise a ValueError if the index is out of range.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        BASE_SEED = 20773
+        if index < 0 or index >= self.num_samples:
+            raise ValueError("The index is out of range")
+        with torch_temporary_seed(20773 + index):
+            image, label = random_labelled_image(shape=self.image_dim, num_classes=self.num_classes)
+        
+        return image, label
         # ========================
 
     def __len__(self):
@@ -91,7 +97,7 @@ class RandomImageDataset(Dataset):
         :return: Number of samples in this dataset.
         """
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        return self.num_samples
         # ========================
 
 
