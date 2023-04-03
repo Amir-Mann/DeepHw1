@@ -52,12 +52,24 @@ class SVMHingeLoss(ClassifierLoss):
 
         loss = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y=y.reshape(-1, 1)
+        zeros_N_C = torch.zeros(size=x_scores.shape, dtype=torch.float32)
+        zeros_N_1 = torch.zeros(size=y.shape, dtype=torch.float32)
+        ones_N_1 = torch.ones_like(y, dtype=torch.float32)
+        y_onehots = torch.scatter(zeros_N_C, dim=1, index=y, src=ones_N_1)
+        truth_scores = torch.sum(x_scores * y_onehots, dim=1).reshape(-1, 1)
+        M = x_scores - truth_scores + self.delta
+        M = torch.scatter(M, dim=1, index=y, src=zeros_N_1)
+        M = torch.maximum(M, zeros_N_C)
+        loss = torch.sum(M)
+        loss = loss / x.shape[0]
         # ========================
 
         # TODO: Save what you need for gradient calculation in self.grad_ctx
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.grad_ctx["M"] = M
+        self.grad_ctx["y_onehots"] = y_onehots
+        self.grad_ctx["x"] = x
         # ========================
 
         return loss
@@ -75,7 +87,12 @@ class SVMHingeLoss(ClassifierLoss):
 
         grad = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        G = self.grad_ctx["M"]
+        G[self.grad_ctx["M"] != 0] = 1
+        dLi_wrt_dWyj = - self.grad_ctx["y_onehots"] * torch.reshape(torch.sum(G, dim=1), (-1, 1))
+        G = G + dLi_wrt_dWyj
+        grad = torch.matmul(self.grad_ctx["x"].T, G)
+        grad = grad / self.grad_ctx["x"].shape[0]
         # ========================
 
         return grad

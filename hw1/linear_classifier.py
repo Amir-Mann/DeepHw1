@@ -23,7 +23,8 @@ class LinearClassifier(object):
 
         self.weights = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        self.weights = torch.randn((self.n_features, self.n_classes), requires_grad=False)
+        self.weights = weight_std * self.weights 
         # ========================
 
     def predict(self, x: Tensor):
@@ -45,7 +46,8 @@ class LinearClassifier(object):
 
         y_pred, class_scores = None, None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        class_scores = torch.matmul(x, self.weights)
+        y_pred = torch.argmax(class_scores, dim=1)
         # ========================
 
         return y_pred, class_scores
@@ -66,7 +68,8 @@ class LinearClassifier(object):
 
         acc = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        current_predictions = y == y_pred
+        acc = torch.mean(current_predictions.float())
         # ========================
 
         return acc * 100
@@ -102,7 +105,16 @@ class LinearClassifier(object):
             #     using the weight_decay parameter.
 
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            for idx, (X, y) in enumerate(dl_train):
+                y_hat, x_scores = self.predict(X)
+                loss = loss_fn.loss(X, y, x_scores, y_hat)
+                grad = loss_fn.grad()
+                
+                train_res.loss.append(loss)
+                
+                self.weights = self.weights - learn_rate * grad
+                
+
             # ========================
             print(".", end="")
 
@@ -136,7 +148,9 @@ def hyperparams():
     #  Manually tune the hyperparameters to get the training accuracy test
     #  to pass.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    hp["weight_std"] = 0.01
+    hp["learn_rate"] = 0.001
+    hp["weight_decay"] = 0.01
     # ========================
 
     return hp
