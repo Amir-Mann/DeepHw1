@@ -105,16 +105,46 @@ class LinearClassifier(object):
             #     using the weight_decay parameter.
 
             # ====== YOUR CODE: ======
-            for idx, (X, y) in enumerate(dl_train):
+            
+            if epoch_idx == 0:
+                train_samples_num = 0
+                valid_samples_num = 0
+            
+            total_correct_valid = 0
+            total_loss_valid = 0
+            for idx, (X, y) in enumerate(dl_valid):
                 y_hat, x_scores = self.predict(X)
                 loss = loss_fn.loss(X, y, x_scores, y_hat)
+                loss += weight_decay / 2 * torch.sum(torch.square(self.weights))
                 grad = loss_fn.grad()
                 
-                train_res.loss.append(loss)
+                total_correct_valid += torch.sum(y==y_hat)
+                total_loss_valid += loss
                 
+                if epoch_idx == 0:
+                    valid_samples_num += X.shape[0]
+
+            valid_res.loss.append(total_loss_valid / valid_samples_num)
+            valid_res.accuracy.append(total_correct_valid / valid_samples_num)
+            
+            total_correct_train = 0
+            total_loss_train = 0
+            for idx, (X, y) in enumerate(dl_train):
+                if epoch_idx == 0:
+                    train_samples_num += X.shape[0]
+                y_hat, x_scores = self.predict(X)
+                loss = loss_fn.loss(X, y, x_scores, y_hat)
+                loss += weight_decay / 2 * torch.sum(torch.square(self.weights))
+                grad = loss_fn.grad()
+                
+                self.weights = (1 - weight_decay) * self.weights
                 self.weights = self.weights - learn_rate * grad
                 
-
+                total_correct_train += torch.sum(y==y_hat)
+                total_loss_train += loss
+                
+            train_res.loss.append(total_loss_train / train_samples_num)
+            train_res.accuracy.append(total_correct_train / train_samples_num)
             # ========================
             print(".", end="")
 
@@ -135,7 +165,11 @@ class LinearClassifier(object):
         #  The output shape should be (n_classes, C, H, W).
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        shape = tuple([self.n_classes] + list(img_shape))
+        if has_bias:
+            w_images = torch.reshape(self.weights[1:], shape)
+        else:
+            w_images = torch.reshape(self.weights , shape)
         # ========================
 
         return w_images
@@ -149,8 +183,8 @@ def hyperparams():
     #  to pass.
     # ====== YOUR CODE: ======
     hp["weight_std"] = 0.01
-    hp["learn_rate"] = 0.001
-    hp["weight_decay"] = 0.01
+    hp["learn_rate"] = 0.003
+    hp["weight_decay"] = 0.0001
     # ========================
 
     return hp
