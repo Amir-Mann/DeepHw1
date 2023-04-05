@@ -6,6 +6,7 @@ from torch.utils.data import Dataset, DataLoader
 import cs236781.dataloader_utils as dataloader_utils
 
 from . import dataloaders
+from .dataloaders import ByIndexSampler
 
 
 class KNNClassifier(object):
@@ -31,7 +32,14 @@ class KNNClassifier(object):
         #     y_train.
         #  2. Save the number of classes as n_classes.
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        x_train_list = []
+        y_train_list = []
+        for samples, labels in dl_train:
+            x_train_list.append(samples)
+            y_train_list.append(labels)
+        x_train = torch.cat(x_train_list, dim = 0)
+        y_train = torch.cat(y_train_list, dim = 0)
+        n_classes = len(y_train)
         # ========================
 
         self.x_train = x_train
@@ -63,7 +71,10 @@ class KNNClassifier(object):
             #  - Set y_pred[i] to the most common class among them
             #  - Don't use an explicit loop.
             # ====== YOUR CODE: ======
-            raise NotImplementedError()
+            ith_col = dist_matrix[:, i]
+            values, indices = torch.topk(ith_col, self.k, largest = False)
+            nearest_n = self.y_train[indices]
+            y_pred[i], count = torch.mode(nearest_n, 0)
             # ========================
 
         return y_pred
@@ -91,7 +102,15 @@ def l2_dist(x1: Tensor, x2: Tensor):
 
     dists = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    # row_mat = x1
+    # column_mat = x2.transpose(0, 1)
+    # print(row_mat[:, :, None].shape)
+    # print(column_mat[None, : :].shape)
+    # diff = row_mat[:, :, None] - column_mat[None, : :]
+    # squared = diff ** 2
+    # sum = torch.sum(squared, dim = 1)
+    # dists = torch.sqrt(sum)
+    dists = torch.cdist(x1, x2)
     # ========================
 
     return dists
@@ -111,7 +130,9 @@ def accuracy(y: Tensor, y_pred: Tensor):
     # TODO: Calculate prediction accuracy. Don't use an explicit loop.
     accuracy = None
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    equal_cells = torch.eq(y, y_pred)
+    equal_cells_float = equal_cells.float()
+    accuracy = torch.mean(equal_cells_float).item()
     # ========================
 
     return accuracy
@@ -142,10 +163,41 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
         #  random split each iteration), or implement something else.
 
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        fold_accuracy = []
+        fold_size = len(ds_train) / num_folds
+        
+        
+        for fold_index in range(num_folds):
+            val_start = fold_index * fold_size
+            val_end = val_start + fold_size
+            val_indices = list(set(range(int(val_end))) - set(range(int(val_start))))
+            train_indices = list(set(range(len(ds_train))) - set(val_indices))
+            
+            #sampler defined in dataloaders.py
+            val_sampler = ByIndexSampler(ds_train, val_indices)
+            train_sampler = ByIndexSampler(ds_train, train_indices)
+            
+            val_dataloader = torch.utils.data.DataLoader(ds_train, batch_size=1024, num_workers = 2, sampler = val_sampler)
+            train_dataloader = torch.utils.data.DataLoader(ds_train, batch_size=1024, num_workers = 2, sampler = train_sampler)
+            
+            model.train(train_dataloader)
+            
+            test_data = []
+            for (batch, labels) in val_dataloader:
+                test_data.append(batch)
+            test_data = torch.cat(test_data, dim = 0)
+            print(test_data.shape)
+            y_pred = model.predict(test_data)
+            x_val, y_val = dataloader_utils.flatten(val_dataloader)
+            current_accuracy = accuracy(y_val, y_pred)
+            fold_accuracy.append(current_accuracy)
+            
         # ========================
 
+    accuracies.append(fold_accuracy)
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
     best_k = k_choices[best_k_idx]
 
     return best_k, accuracies
+
+

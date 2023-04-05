@@ -99,3 +99,15 @@ class StartStopSampler(Sampler):
 
     def __iter__(self) -> Iterator[int]:
         return iter(range(self.start_index, self.stop_index, self.step))
+    
+class ByIndexSampler(Sampler):
+    def __init__(self, data_source: Sized ,indices_list: int):
+        super().__init__(data_source)
+        self.data_source = data_source
+        self.indices_list = indices_list
+
+    def __iter__(self) -> Iterator[int]:
+        return iter(self.indices_list)
+    
+    
+    
