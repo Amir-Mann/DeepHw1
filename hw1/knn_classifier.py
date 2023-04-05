@@ -39,7 +39,7 @@ class KNNClassifier(object):
             y_train_list.append(labels)
         x_train = torch.cat(x_train_list, dim = 0)
         y_train = torch.cat(y_train_list, dim = 0)
-        n_classes = len(y_train)
+        n_classes = torch.max(torch.unique(y_train)) + 1
         # ========================
 
         self.x_train = x_train
@@ -73,8 +73,8 @@ class KNNClassifier(object):
             # ====== YOUR CODE: ======
             ith_col = dist_matrix[:, i]
             values, indices = torch.topk(ith_col, self.k, largest = False)
-            nearest_n = self.y_train[indices]
-            y_pred[i], count = torch.mode(nearest_n, 0)
+            nearest_k = self.y_train[indices]
+            y_pred[i], count = torch.mode(nearest_k, 0)
             # ========================
 
         return y_pred
