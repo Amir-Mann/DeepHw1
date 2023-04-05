@@ -193,8 +193,7 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
             fold_accuracy.append(current_accuracy)
             
         # ========================
-
-    accuracies.append(fold_accuracy)
+        accuracies.append(fold_accuracy)    
     best_k_idx = np.argmax([np.mean(acc) for acc in accuracies])
     best_k = k_choices[best_k_idx]
 
