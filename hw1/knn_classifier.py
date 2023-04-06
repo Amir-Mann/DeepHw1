@@ -102,15 +102,16 @@ def l2_dist(x1: Tensor, x2: Tensor):
 
     dists = None
     # ====== YOUR CODE: ======
-    # row_mat = x1
-    # column_mat = x2.transpose(0, 1)
-    # print(row_mat[:, :, None].shape)
-    # print(column_mat[None, : :].shape)
-    # diff = row_mat[:, :, None] - column_mat[None, : :]
-    # squared = diff ** 2
-    # sum = torch.sum(squared, dim = 1)
-    # dists = torch.sqrt(sum)
-    dists = torch.cdist(x1, x2)
+    a_squerd_term = torch.sum(torch.square(x1), dim=1)
+    a_squerd_term = torch.reshape(a_squerd_term, (a_squerd_term.numel(), 1))
+    
+    b_squerd_term = torch.sum(torch.square(x2), dim=1)
+    b_squerd_term = torch.reshape(b_squerd_term, (1, b_squerd_term.numel()))
+    
+    mul = torch.matmul(x1, x2.T)
+    
+    dists = a_squerd_term - 2 * mul + b_squerd_term
+    dists = torch.sqrt(dists)
     # ========================
 
     return dists
