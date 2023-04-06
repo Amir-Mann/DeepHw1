@@ -76,29 +76,19 @@ def create_train_validation_loaders(
     num_samples = len(dataset)
     validation_size = int(num_samples * validation_ratio)
     train_size = num_samples - validation_size
+    train_sampler = torch.utils.data.SubsetRandomSampler(range(0, train_size))
     dl_train = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, num_workers=num_workers,
-        sampler=StartStopSampler(dataset, 0, train_size),
+        sampler=train_sampler,
     )
+    valid_sampler = torch.utils.data.SubsetRandomSampler(range(train_size, num_samples))
     dl_valid = torch.utils.data.DataLoader(
         dataset, batch_size=batch_size, num_workers=num_workers,
-        sampler=StartStopSampler(dataset, train_size, num_samples),
+        sampler=valid_sampler,
     )
     # ========================
 
     return dl_train, dl_valid
-
-class StartStopSampler(Sampler):
-    def __init__(self, data_source: Sized ,start_index: int, stop_index: int, step=1):
-        super().__init__(data_source)
-        self.data_source = data_source
-
-        self.start_index = start_index
-        self.stop_index = stop_index
-        self.step = step
-
-    def __iter__(self) -> Iterator[int]:
-        return iter(range(self.start_index, self.stop_index, self.step))
     
 class ByIndexSampler(Sampler):
     def __init__(self, data_source: Sized ,indices_list: int):
