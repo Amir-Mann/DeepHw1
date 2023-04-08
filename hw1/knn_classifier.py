@@ -183,14 +183,15 @@ def find_best_k(ds_train: Dataset, k_choices, num_folds):
             
             model.train(train_dataloader)
             
-            test_data = []
+            all_y_preds = torch.Tensor([])
+            all_y_vals = torch.Tensor([])
             for (batch, labels) in val_dataloader:
-                test_data.append(batch)
-            test_data = torch.cat(test_data, dim = 0)
-            print(test_data.shape)
-            y_pred = model.predict(test_data)
-            x_val, y_val = dataloader_utils.flatten(val_dataloader)
-            current_accuracy = accuracy(y_val, y_pred)
+                y_pred = model.predict(batch)
+                all_y_preds = torch.cat((all_y_preds, y_pred), dim=0)
+                all_y_vals = torch.cat((all_y_vals, labels), dim=0)
+            
+            current_accuracy = accuracy(all_y_vals, all_y_preds)
+                
             fold_accuracy.append(current_accuracy)
             
         # ========================
