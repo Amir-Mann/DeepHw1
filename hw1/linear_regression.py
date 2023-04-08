@@ -32,7 +32,7 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         y_pred = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        y_pred = np.matmul(X, self.weights_)
         # ========================
 
         return y_pred
@@ -51,7 +51,10 @@ class LinearRegressor(BaseEstimator, RegressorMixin):
 
         w_opt = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        N = len(y)
+        K = np.matmul(X.T, X) + (self.reg_lambda * N * np.identity(X.shape[1]))
+        K[0, 0] = K[0, 0] - N * self.reg_lambda
+        w_opt = np.matmul(np.linalg.inv(K), np.matmul(X.T, y))
         # ========================
 
         self.weights_ = w_opt
@@ -100,7 +103,8 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         xb = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        ones = np.ones((X.shape[0], 1))
+        xb = np.concatenate((ones, X), axis=1)
         # ========================
 
         return xb
@@ -163,7 +167,34 @@ def top_correlated_features(df: DataFrame, target_feature, n=5):
     # TODO: Calculate correlations with target and sort features by it
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    y = df[target_feature]
+    mu_y = y.mean()
+    temp_y = y - mu_y
+    temp_y = temp_y * temp_y
+    std_y = temp_y.sum() ** 0.5
+    
+    pearsons_r_list = []
+    features = []
+    for feature in df:
+        if feature == target_feature:
+            continue
+        x = df[feature]
+        mu_x = x.mean()
+        temp_x = x - mu_x
+        temp_x = temp_x * temp_x
+        std_x = temp_x.sum() ** 0.5
+        
+        temp_xy = (x - mu_x) * (y - mu_y)
+        cov_xy = temp_xy.sum()
+        pearsons_r = cov_xy / (std_x * std_y)
+        pearsons_r_list.append(pearsons_r)
+        features.append(feature)
+    
+    features = sorted(features, reverse=True ,key=lambda f: abs(pearsons_r_list[features.index(f)]))
+    pearsons_r_list = sorted(pearsons_r_list, reverse=True, key=abs)
+    
+    top_n_features = features[:n]
+    top_n_corr = pearsons_r_list[:n]
     # ========================
 
     return top_n_features, top_n_corr
@@ -176,10 +207,12 @@ def mse_score(y: np.ndarray, y_pred: np.ndarray):
     :param y_pred: Ground truth labels, shape (N,)
     :return: MSE score.
     """
-
+    
     # TODO: Implement MSE using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    diffs = y - y_pred
+    diffs = diffs * diffs
+    mse = diffs.sum() / len(y)
     # ========================
     return mse
 
@@ -194,7 +227,12 @@ def r2_score(y: np.ndarray, y_pred: np.ndarray):
 
     # TODO: Implement R^2 using numpy.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    residuls = y - y_pred
+    residuls = residuls * residuls
+    y_avg = sum(y) / len(y)
+    avg_diff = y - y_avg
+    avg_diff = avg_diff * avg_diff
+    r2 = 1 - residuls.sum() / avg_diff.sum()
     # ========================
     return r2
 
