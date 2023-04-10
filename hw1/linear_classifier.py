@@ -116,7 +116,6 @@ class LinearClassifier(object):
                 y_hat, x_scores = self.predict(X)
                 loss = loss_fn.loss(X, y, x_scores, y_hat)
                 loss += weight_decay / 2 * torch.sum(torch.square(self.weights))
-                grad = loss_fn.grad()
                 
                 total_correct_valid += torch.sum(y==y_hat)
                 total_loss_valid += loss
@@ -135,6 +134,7 @@ class LinearClassifier(object):
                 y_hat, x_scores = self.predict(X)
                 loss = loss_fn.loss(X, y, x_scores, y_hat)
                 loss += weight_decay / 2 * torch.sum(torch.square(self.weights))
+                grad = loss_fn.grad()
                 
                 self.weights = (1 - weight_decay) * self.weights
                 self.weights = self.weights - learn_rate * grad

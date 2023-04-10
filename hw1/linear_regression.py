@@ -119,13 +119,13 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
     Generates custom features for the Boston dataset.
     """
 
-    def __init__(self, degree=2):
+    def __init__(self, degree=2, num_cols=300):
         self.degree = degree
 
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
-        # ====== YOUR CODE: ======
-        
+        # ====== YOUR CODE: =====
+        self.num_cols = num_cols
         # ========================
 
     def fit(self, X, y=None):
@@ -154,27 +154,30 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         tax = X[:,10]
         lstat = X[:, 13]
         #print(X[:1,:])
-        feature0 = X[:, 0]
         feature1 = np.power(lstat, -0.5)
         feature2 = np.power(rm, 2) * np.power(ptratio + 0.01, -1)
         feature3 = np.power(rm, 3) * np.log(b + 0.01)
         feature4 = np.power(nox * ptratio + 0.01, -1)
         feature5 = np.power(tax, -0.5)
         features = [feature1, feature2, feature3, feature4, feature5]
-        for index1 in range(1, 14):
-            for index2 in range(index1, 14):
-                features.append(X[:, index1] * X[:, index2])
-        for index1 in range(1, 14):
-            for index2 in range(index1, 14):
-                for index3 in range(index2, 14):
-                    features.append(X[:, index1] * X[:, index2]  * X[:, index3])
+        
         for i, feature in enumerate(features):
             features[i] = feature.reshape(-1, 1)
-        features.append(X)
-        features.append(np.power(X + 0.01, -1))
-        features.append(np.log(X + 0.01))
-
+        pol_transformer = sklearn.preprocessing.PolynomialFeatures(degree=self.degree, include_bias=False)
+        mass_features = pol_transformer.fit_transform(X)
+        mass_features = np.concatenate([mass_features,
+                                        np.power(X + 0.01, -0.5),
+                                        np.log(X + 0.01)], axis = 1)
+        
+        np_state = np.random.get_state()
+        np.random.seed(20773)
+        np.random.shuffle(np.transpose(mass_features))
+        np.random.set_state(np_state)
+        
+        features.append(mass_features)
+        
         X_transformed = np.concatenate(features, axis = 1)
+        X_transformed = X_transformed[:,:self.num_cols]
         # ========================
 
         return X_transformed
@@ -296,7 +299,31 @@ def cv_best_hyperparams(
     #  - You can use MSE or R^2 as a score.
 
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    from sklearn.model_selection import KFold
+    kf = KFold(k_folds)
+    current = model.get_params()
+    lambda_key = "linearregressor__reg_lambda"
+    degree_key = "bostonfeaturestransformer__degree"
+    num_cols_key = "bostonfeaturestransformer__num_cols"
+    min_mse = None
+    for i, lambda_ in enumerate(lambda_range):
+        print(f"{i} out of {len(lambda_range)} done:")
+        current[lambda_key] = lambda_
+        for degree in degree_range:
+            current[degree_key] = degree
+            print("|", end="")
+            for num_cols in np.logspace(1, 3, base=10, num=10):
+                current[num_cols_key] = int(num_cols)
+                print(".", end="")
+                for fold, (train_index, test_index) in enumerate(kf.split(X)):
+                    model.set_params(**current)
+                    model.fit(X[train_index], y[train_index])
+                    model.predict(X[train_index])
+                    y_pred = model.predict(X[test_index])
+                    score = mse_score(y[test_index], y_pred)
+                    if min_mse is None or score < min_mse:
+                        min_mse = score
+                        best_params = model.get_params()
     # ========================
 
     return best_params
