@@ -85,6 +85,18 @@ An equation: $e^{i\pi} -1 = 0$
 part3_q2 = r"""
 **Your answer:**
 
+1. the model is a simple linear classifier. as so, it learns to predict the digit according to 
+   activated pixels in the image. most of the wrong prediction of our model were "false 8",
+   means that the model mistakenly classified different digits as 8.
+   in those cases, we noticed that the center of the image consists large amout of activated pixels,
+   so as our model is a simple linear classifier it makes sense that it would be wrong
+   in cases like described above.
+
+2. this interpretation differs from KNN, because it looks on behaviors of digits. for example, all 7's has
+   a black section in the right bottom corner. where as KNN looks on the K-nearest neighbors. for example for k = 3, 
+   it would'nt so heaviley mispredict 3's as an 8 because there will be enough 3's that are highly activated 
+   in the center.  
+
 
 Write your answer using **markdown** and $\LaTeX$:
 ```python
@@ -116,6 +128,8 @@ An equation: $e^{i\pi} -1 = 0$
 part4_q1 = r"""
 **Your answer:**
 
+the ideal pattern would have been a $e = 0$ line,
+THE DIFFERENCE
 
 Write your answer using **markdown** and $\LaTeX$:
 ```python
@@ -128,6 +142,15 @@ An equation: $e^{i\pi} -1 = 0$
 
 part4_q2 = r"""
 **Your answer:**
+
+1. it is still a linear regression model. that because our model still performs linear interpretation of the
+   features it's given, simply the features have been tranformed not linearily. 
+2. yes we can. because bob the builder said so, and also because every function
+   $f: \mathbbR^d \rightarrow \mathbbR$ represanting the perfect nonlinear function, by using the transformation
+   $x' = f(\bar x)$ would allow for a linear model to predict f perfectly.
+3. No, it would'nt be a hyperplane anymore. although it would be a hyperplane in the transformd features space, 
+   when reducing the hyperplane to a surface in the original feature space, we get a complex nonlinear surface.
+   the nonlinearity in the features themselves, will make for a curved decision boundary.
 
 
 Write your answer using **markdown** and $\LaTeX$:
@@ -142,6 +165,8 @@ An equation: $e^{i\pi} -1 = 0$
 part4_q3 = r"""
 **Your answer:**
 
+1. We used np.logspace because the regularization is much more sensevite to values around 0 than around 100.
+2. $folds ampunt * lambdas amount * degrees$, which equals to $20 * 4 * 3 = 240$ 
 
 Write your answer using **markdown** and $\LaTeX$:
 ```python
