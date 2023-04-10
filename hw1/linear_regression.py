@@ -80,7 +80,12 @@ def fit_predict_dataframe(
     """
     # TODO: Implement according to the docstring description.
     # ====== YOUR CODE: ======
-    raise NotImplementedError()
+    if(feature_names):
+        X = (df[feature_names]).to_numpy()
+    else:
+        X = (df.loc[ : , df.columns != target_name]).to_numpy()
+    y = (df[target_name]).to_numpy()
+    y_pred = model.fit_predict(X, y)
     # ========================
     return y_pred
 
@@ -109,7 +114,6 @@ class BiasTrickTransformer(BaseEstimator, TransformerMixin):
 
         return xb
 
-
 class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
     """
     Generates custom features for the Boston dataset.
@@ -121,7 +125,7 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         # TODO: Your custom initialization, if needed
         # Add any hyperparameters you need and save them as above
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        
         # ========================
 
     def fit(self, X, y=None):
@@ -143,7 +147,34 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
 
         X_transformed = None
         # ====== YOUR CODE: ======
-        raise NotImplementedError()
+        rm = X[:, 6]
+        ptratio = X[:,11]
+        b = X[:,12]
+        nox = X[:,5]
+        tax = X[:,10]
+        lstat = X[:, 13]
+        #print(X[:1,:])
+        feature0 = X[:, 0]
+        feature1 = np.power(lstat, -0.5)
+        feature2 = np.power(rm, 2) * np.power(ptratio + 0.01, -1)
+        feature3 = np.power(rm, 3) * np.log(b + 0.01)
+        feature4 = np.power(nox * ptratio + 0.01, -1)
+        feature5 = np.power(tax, -0.5)
+        features = [feature1, feature2, feature3, feature4, feature5]
+        for index1 in range(1, 14):
+            for index2 in range(index1, 14):
+                features.append(X[:, index1] * X[:, index2])
+        for index1 in range(1, 14):
+            for index2 in range(index1, 14):
+                for index3 in range(index2, 14):
+                    features.append(X[:, index1] * X[:, index2]  * X[:, index3])
+        for i, feature in enumerate(features):
+            features[i] = feature.reshape(-1, 1)
+        features.append(X)
+        features.append(np.power(X + 0.01, -1))
+        features.append(np.log(X + 0.01))
+
+        X_transformed = np.concatenate(features, axis = 1)
         # ========================
 
         return X_transformed
