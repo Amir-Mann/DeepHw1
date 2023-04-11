@@ -111,13 +111,6 @@ part3_q3 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 # ==============
@@ -128,8 +121,13 @@ An equation: $e^{i\pi} -1 = 0$
 part4_q1 = r"""
 **Your answer:**
 
-the ideal pattern would have been a $e = 0$ line,
-THE DIFFERENCE
+The ideal pattern would have been a $e = 0$ line.
+We can say that the model is fairly descent at evaluating data, and that the CV did 
+infact make for good generalzing learning model, because the train errors are similar
+to the test errors.
+The final plot after CV is much more dense around $e = 0$ line, it is also clear that in the
+top 5 model alot of prediction prduced big negative residules, and the final model is better
+balanced.
 
 Write your answer using **markdown** and $\LaTeX$:
 ```python
@@ -152,14 +150,6 @@ part4_q2 = r"""
    when reducing the hyperplane to a surface in the original feature space, we get a complex nonlinear surface.
    the nonlinearity in the features themselves, will make for a curved decision boundary.
 
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
 
 part4_q3 = r"""
@@ -168,13 +158,5 @@ part4_q3 = r"""
 1. We used np.logspace because the regularization is much more sensevite to values around 0 than around 100.
 2. $folds ampunt * lambdas amount * degrees$, which equals to $20 * 4 * 3 = 240$ 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
-
 """
-
 # ==============

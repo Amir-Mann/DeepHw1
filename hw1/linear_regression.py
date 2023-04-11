@@ -153,7 +153,6 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         nox = X[:,5]
         tax = X[:,10]
         lstat = X[:, 13]
-        #print(X[:1,:])
         feature1 = np.power(lstat, -0.5)
         feature2 = np.power(rm, 2) * np.power(ptratio + 0.01, -1)
         feature3 = np.power(rm, 3) * np.log(b + 0.01)
@@ -163,6 +162,8 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         
         for i, feature in enumerate(features):
             features[i] = feature.reshape(-1, 1)
+        
+        
         pol_transformer = sklearn.preprocessing.PolynomialFeatures(degree=self.degree, include_bias=False)
         mass_features = pol_transformer.fit_transform(X)
         mass_features = np.concatenate([mass_features,
@@ -173,7 +174,6 @@ class BostonFeaturesTransformer(BaseEstimator, TransformerMixin):
         np.random.seed(20773)
         np.random.shuffle(np.transpose(mass_features))
         np.random.set_state(np_state)
-        
         features.append(mass_features)
         
         X_transformed = np.concatenate(features, axis = 1)
