@@ -9,31 +9,34 @@ math (delimited with $$).
 # Part 1 answers
 
 part1_q1 = r"""
-**Your answer: 1. False  2. False  3. True  4. True**
+**Your answer:**
+
+**1. False  2. False  3. True  4. True**
 
 **explanation**
-1.The in-sa0mple error a determnistic value calculated on the training dataset (only), 
-  independed of the test dataset. 
-  the test dataset helps us to estimate the out-of-sample error. 
+
+1. The in-sample error is a deterministic value calculated on the training dataset (only), 
+   independed of the test dataset.
+   The test dataset helps us to estimate the out-of-sample error.
 
 2. We can split out dataset into a zero size training dataset, and full size test dataset.
    such split would make any model equally good. and so training would not change our initial guess.
    and no learning would be done at all.
    
-3. In cross validation we change and train our training a and validation split to get a better optimization for our hyperparameters
+3. In cross validation we change and train our training and validation split to get a better optimization for our hyperparameters.
    using the test set in our cross validation would contaminate our out-of-sample estimation. so we should not use it.
 
 4. Generalization error is the error of the model on unseen data.
    In cross validation we set a side some of the data (different group each fold) and not
-   expose it to the model while training, and then that data is used to evaluate the gen error.
+   expose it to the model while training, and then that data is used to evaluate the generalization error.
 """
 
 part1_q2 = r"""
 **Your answer: Not justified**
 
-by using the test set to determine the $\lambda$ we damage the ability to estimate our model's out-of-sample error.
-because we choose the $\lambda$ that will produce better results specificly on the test set and therefoe the test seete will no longer
-new unseen data from the theoretical distribution.
+By using the test set to determine the best $\lambda$ we damage the ability to estimate our model's out-of-sample error.
+Because we choose the $\lambda$ that will produce better results specificly on the test set and therefor the test set will no longer
+quilify as unseen data new samples from the theoretical distribution.
 """
 
 # ==============
@@ -109,8 +112,17 @@ An equation: $e^{i\pi} -1 = 0$
 
 part3_q3 = r"""
 **Your answer:**
+The learning rate we choose is good, maybe a little fast.
+We can see that on the last few epochs the model did not improve on the validation set at all.
+If we would have choosen a too high learning rate the model would have picked much earlier in the 
+learning proccess and would'nt have stayed stable after that.
+If we would have choosen a too low learning rate the model wouldn't have reached 0 incline, and
+would have required more epochs to finish the learning.
 
-
+Based on the graph we can say that the model learned pretty well, and is generalzing pretty well.
+We might say that this model is slightly underfitted - even on the training dataset the model
+doesn't reach solid 92+% accuracy at any given point, this is duo to the simplicty of the linear
+clasiffier.
 """
 
 # ==============
@@ -156,7 +168,7 @@ part4_q3 = r"""
 **Your answer:**
 
 1. We used np.logspace because the regularization is much more sensevite to values around 0 than around 100.
-2. $folds ampunt * lambdas amount * degrees$, which equals to $20 * 4 * 3 = 240$ 
+2. $folds ampunt * lambdas amount * degrees * cols_numd amount$, which equals to $3 * 20 * 4 * 10 = 2400$ 
 
 """
 # ==============

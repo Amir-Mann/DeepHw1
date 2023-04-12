@@ -25,27 +25,14 @@ class FirstLastSampler(Sampler):
         # If the length of the data so4urce is N, you should return indices in a
         # first-last ordering, i.e. [0, N-1, 1, N-2, ...].
         # ====== YOUR CODE: ======
-        return FirstLastSamplerIterator(len(self.data_source))
+        return iter([
+            len(self) - 1 - i // 2 if i % 2 else i // 2
+            for i in range(len(self))
+        ])
         # ========================
 
     def __len__(self):
         return len(self.data_source)
-
-class FirstLastSamplerIterator(Iterator[int]):
-    def __init__(self, N: int) -> None:
-        super().__init__()
-        self.N = N
-        self.current = -1
-        
-    def __next__(self):
-        self.current += 1
-        if self.current >= self.N:
-            raise StopIteration
-        if self.current % 2 == 0:
-            return int(self.current / 2)
-        else:
-            return self.N - 1 - int(self.current / 2)
-
     
 def create_train_validation_loaders(
     dataset: Dataset, validation_ratio, batch_size=100, num_workers=2
@@ -90,14 +77,6 @@ def create_train_validation_loaders(
 
     return dl_train, dl_valid
     
-class ByIndexSampler(Sampler):
-    def __init__(self, data_source: Sized ,indices_list: int):
-        super().__init__(data_source)
-        self.data_source = data_source
-        self.indices_list = indices_list
-
-    def __iter__(self) -> Iterator[int]:
-        return iter(self.indices_list)
     
     
     
