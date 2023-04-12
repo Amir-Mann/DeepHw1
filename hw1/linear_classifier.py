@@ -115,7 +115,8 @@ class LinearClassifier(object):
             for idx, (X, y) in enumerate(dl_valid):
                 y_hat, x_scores = self.predict(X)
                 loss = loss_fn.loss(X, y, x_scores, y_hat)
-                loss += weight_decay / 2 * torch.sum(torch.square(self.weights))
+                loss += (weight_decay / 2) * torch.sum(torch.square(self.weights))
+                
                 
                 total_correct_valid += torch.sum(y==y_hat)
                 total_loss_valid += loss

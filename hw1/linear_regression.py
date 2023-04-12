@@ -307,14 +307,11 @@ def cv_best_hyperparams(
     num_cols_key = "bostonfeaturestransformer__num_cols"
     min_mse = None
     for i, lambda_ in enumerate(lambda_range):
-        print(f"{i} out of {len(lambda_range)} done:")
         current[lambda_key] = lambda_
         for degree in degree_range:
             current[degree_key] = degree
-            print("|", end="")
             for num_cols in np.logspace(1, 3, base=10, num=10):
                 current[num_cols_key] = int(num_cols)
-                print(".", end="")
                 for fold, (train_index, test_index) in enumerate(kf.split(X)):
                     model.set_params(**current)
                     model.fit(X[train_index], y[train_index])

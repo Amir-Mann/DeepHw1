@@ -76,12 +76,19 @@ part3_q1 = r"""
 **Your answer:**
 
 
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
+The choice for $\Delta$ is arbitrary because it makes for the same loss function multiplied by a constant, and proportional weights which do not change the final optimized decision boundary.
+Lets mark the original parameters $L, W, \lambda, \Delta$ and the new ones $L', W', \lambda', \Delta'$, lets then assume $\Delta' = C\cdot\Delta$ for some $C\in R$.
+For $W' = C\cdot W, \lambda' = \frac{\lambda}{C}$
+We get:
+$$ L'(W) = \frac{1}{N}\sum_i\sum_{j\neq y_i} max(0, \Delta' + w'^T_j \cdot x_i - w'^T_{y_i} \cdot x_i) + \frac{\lambda'}{2}||W'||^2 $$
+$$
+ = \frac{1}{N} \sum_i \sum_{j \neq y_i} max(C \cdot 0, C \Delta + C w^T_j \cdot x_i - C w^T_{y_i} \cdot x_i) + \frac{\lambda}{2C}||C \cdot W||^2$$
+ $$
+ = C \frac{1}{N} \sum_i \sum_{j \neq y_i} max(0, \Delta + w^T_j \cdot x_i - w^T_{y_i} \cdot x_i) + \frac{\lambda C^2}{2C}||W||^2$$
+$$
+ = C L(W)$$
+
+ There for the optimization and optimal solution would be parallel to the original one and the classification would yield the same result (up to changes in the initial parameters, like $\lambda$ and $W_0$.
 
 """
 
@@ -89,24 +96,17 @@ part3_q2 = r"""
 **Your answer:**
 
 1. the model is a simple linear classifier. as so, it learns to predict the digit according to 
-   activated pixels in the image. most of the wrong prediction of our model were "false 8",
-   means that the model mistakenly classified different digits as 8.
-   in those cases, we noticed that the center of the image consists large amout of activated pixels,
-   so as our model is a simple linear classifier it makes sense that it would be wrong
-   in cases like described above.
+   activated pixels in the image. we noticed, that our model mis-classified digits (for example
+   mistakenly classified sample to be the digit y) for samples that were activated in parts that 
+   were characterized with the digit y. 
+   means that if a sample of the digit 4 were highly activated strongly in the right half, and at
+   the general top area, our model might have classified this sample as 9, as digit that is activated
+   in the same regions.
 
 2. this interpretation differs from KNN, because it looks on behaviors of digits. for example, all 7's has
    a black section in the right bottom corner. where as KNN looks on the K-nearest neighbors. for example for k = 3, 
    it would'nt so heaviley mispredict 3's as an 8 because there will be enough 3's that are highly activated 
    in the center.  
-
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
@@ -119,9 +119,9 @@ learning proccess and would'nt have stayed stable after that.
 If we would have choosen a too low learning rate the model wouldn't have reached 0 incline, and
 would have required more epochs to finish the learning.
 
-Based on the graph we can say that the model learned pretty well, and is generalzing pretty well.
+Based on the graph we can say that the model learned pretty well, and is generalizing pretty well.
 We might say that this model is slightly underfitted - even on the training dataset the model
-doesn't reach solid 92+% accuracy at any given point, this is duo to the simplicty of the linear
+doesn't reach solid 92+% accuracy at any given point, this is due to the simplicty of the linear
 clasiffier.
 """
 
@@ -133,20 +133,13 @@ clasiffier.
 part4_q1 = r"""
 **Your answer:**
 
-The ideal pattern would have been a $e = 0$ line.
+The ideal pattern would have been an $e = 0$ line.
 We can say that the model is fairly descent at evaluating data, and that the CV did 
-infact make for good generalzing learning model, because the train errors are similar
+infact make for good generalizing learning model, because the train errors are similar
 to the test errors.
 The final plot after CV is much more dense around $e = 0$ line, it is also clear that in the
 top 5 model alot of prediction prduced big negative residules, and the final model is better
 balanced.
-
-Write your answer using **markdown** and $\LaTeX$:
-```python
-# A code block
-a = 2
-```
-An equation: $e^{i\pi} -1 = 0$
 
 """
 
