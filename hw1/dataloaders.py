@@ -78,5 +78,12 @@ def create_train_validation_loaders(
     return dl_train, dl_valid
     
     
-    
+class ByIndexSampler(Sampler):
+    def __init__(self, data_source: Sized ,indices_list: int):
+        super().__init__(data_source)
+        self.data_source = data_source
+        self.indices_list = indices_list
+
+    def __iter__(self) -> Iterator[int]:
+        return iter(self.indices_list)
     

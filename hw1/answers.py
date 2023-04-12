@@ -49,7 +49,7 @@ Increasing K may lead to improved generalization of the model, up to a certain p
 When $K=1$ the model is overfitted, the training error would be 0, but every prediction on
 unseen data would be extremly sensitive to it's nearst neighboor, making for bad generalization.
 When $K>=N$, where $N$ is the trainig data size, we get a simple decision rule predicting each sample
-as the same way as the majority of the data, making for very bad "model".
+to be the common label in the data, making for very bad "model".
 So there should be an increase in K which will improve model preformance on unseen data, but
 only up to a certain point which is depandent on the distribution and number of samples.
 """
@@ -59,10 +59,10 @@ part2_q2 = r"""
 
 Training with k-fold CV is better-
 
-1. than fining best model with regard to *train-set* acuraccy because it minimazes the in-sample loss,
+1. than finding best model with regard to *train-set* acuraccy because it minimazes the in-sample loss,
    which in itself has no value to the actuall accuracy on unseen data which is our actuall goal.
-   This will make for an overfitting of the model structure itself to data.
-2. than fining best model with regard to *test-set* acuraccy because it changes our model directy for
+   This will make for an overfitting of the model structure itself to data. (on KNN it will always set k=1)
+2. than finding best model with regard to *test-set* acuraccy because it changes our model directy for
    fitting the test data, destroying our ability to estimate the out-of-sample error once we finished
    training our model.
 """
